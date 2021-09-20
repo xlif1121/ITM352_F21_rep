@@ -1,7 +1,7 @@
-/* General */
+ /* General */
  
 
-html {
+ html {
   
   font-family: 'Raleway', sans-serif;
   background-color: yellow;
@@ -89,10 +89,6 @@ aside {
 
 main {
   flex: 7;
-    display: flex;
-	flex-flow: row wrap;
-	justify-content: space-around;
-	background: url('./phone_globe.jpg') no-repeat center;
 }
 
 
@@ -158,6 +154,8 @@ section p {
     bottom: 0px;
     
 }
+
+
 .rotate img
 {
   animation: rotation .3s infinite linear;
