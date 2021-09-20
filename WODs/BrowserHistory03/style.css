@@ -1,40 +1,47 @@
 h1,h2 {
     font-family: "Oswald", sans;
 }
+
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
-li{
+
+li {
     display: inline;
 }
-#navbar a{
+
+#navbar a {
     margin-left: 75;
     margin-right: 75px;
 }
 body {
-    color:darkblue;
+    color: darkblue;
     font-family: "Open Sans", sans;
     margin: 10px 50px 10px 50px;
     width: 950px;
-    background-color: ivory;
+    background-color:  Ivory;
 }
+
 img{
-    floot:left;
+    float: left;
     margin-right: 10px;
 }
+
 .left{
     float: left;
     width: 300px;
     padding: 1em;
 }
+
 .right{
     float: right;
     width: 300px;
     padding: 1em;
 }
-.center{
+
+.center {
     margin-left: 300px;
     margin-right: 300px;
     padding: 1em;
