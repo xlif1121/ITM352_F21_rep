@@ -3,6 +3,7 @@
 
 <head>
     <script>
+        var store_name="Xinfei";
         var first_name = "Xinfei";
         var last_name = "Li";
     </script>
@@ -20,7 +21,7 @@
             </p>
             <span style="font-size: 200%;"> 
                 <script>
-                    document.write(`<b>${first_name}</b> <i>${last_name}'s</i>`)
+                    document.write(`<b>${first_name}</b> <i>${last_name}</i>'s`)
                     </script>
                     </span> Used Smart Phone Store
         </h1>
@@ -66,25 +67,25 @@
             </section>
         </main>
     </div>
-    <h1>
-        Your One Stop Phone Shop-
-        <script>document.write(store_name);</script>'s
-    </h1>
-
-        <footer>
+    <footer>
+    
             <script>
-                line=0;
-                now=new Date();
+            line = 0;
+            now = new Date();
             document.write(`
-            <table border="1" style="margin-left: auto; margin-right: auto; text-align: center;">
+        <table border="1" style="margin-left: auto; margin-right: auto; text-align: center;">
             <tr><th colspan="2"><h1>Your One Stop For Used Phones - 
             ${first_name[0] = '.' + last_name[0] + '.'}'s</h1></th></tr>
-            <tr><td>${++line}.</td><td><br />Copyright @ ${Xinfei+''+ Li}</td></tr>
+            <tr><td>${++line}.</td><td><br />Copyright @ ${Xinfei + '' + Li}</td></tr>
             <tr><td>${++line}.</td><td>${now.getFullYear()}</td></tr>
-            <tr><td>${++line}.</td><td>${(now.getHours()+11) % 12 + 1 + ':' +now.getMinutes() + ((now.getHours() < 12)? 'AM':'Pm')}</td></tr>
+            <tr><td>${++line}.</td><td>${(now.getHours() + 11) % 12 + 1 + ':' + now.getMinutes() + ((now.getHours() < 12) ? 'AM' : 'Pm')}</td></tr>
         </table>
         `);
         </script>
+        <h1>
+            Your One Stop Phone Shop-
+            <script>document.write(store_name);</script>'s
+        </h1>
         </footer>
 </body>
 
