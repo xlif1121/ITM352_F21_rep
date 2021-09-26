@@ -104,7 +104,7 @@ main {
 aside {
   display: flex;
   align-items: stretch;
-  background: url(./phone_globe.jpg) no-repeat 50% center;
+  background: url(phone_globe.jpg) no-repeat 50% center;
   padding: 50px 0;
 }
 

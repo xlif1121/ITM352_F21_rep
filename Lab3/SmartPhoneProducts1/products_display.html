@@ -5,9 +5,18 @@
     <meta charset="UTF-8">
     <title>Smartphone Products</title>
     <link rel="stylesheet" type="text/css" href="products-style.css">
-
+    <style id="localstyle"></style>
 <body>
+    <header>
     <h1>Xinfei's Used Smart Phone Store</h1>
+</header>
+    <div>
+        <aside>
+            <div style="font-size:4rem;text-align:center;font-weight:bold;font-style:italic;color:white">
+                We sell from
+                around the globe!  
+            </aside>
+            </div>
     <div><main>
             
         <section class="item" onmouseover="this.className = 'item rotate';" onclick = "this.className='item';">
@@ -37,9 +46,13 @@
         </section>
     </main>
     </div>
+    <footer>
+        <input id='speedSlider' type='range' min=".1" max="5" step=".1" style="direction: rtl;" 
+        onchange="localStyle.innerHTML = '.rotate img {animation-duration: ' + speedSlider.value + 's;}';"
+        >
         <h1>
         Your One Stop Phone Shop  
         </h1>
-        
+     </footer>   
     </body>
     </html>
