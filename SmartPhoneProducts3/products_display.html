@@ -1,0 +1,55 @@
+<script src="./products_data.js">
+   
+</script>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        var store_name = "Xinfei Li";
+    </script>
+    <meta charset="UTF-8">
+    <title>Smartphone Products</title>
+    <link rel="stylesheet" type="text/css" href="products-style.css">
+
+<body>
+    <header>
+
+
+        <h1>
+            <script>
+                document.write(store_name)
+            </script>'s Used Smart Phone Store
+        </h1>
+    </header>
+    <div>
+        <aside>
+            <div style="font-size:4rem;text-align:center;font-weight:bold;font-style:italic;color:white">
+                We sell from
+                around the globe!
+            </div>
+        </aside>
+        <main>
+            <script>
+                for (i = 0; i <= products.length; i++) {
+                    document.write(`
+    <section class="item">
+                <h2>${products[i].brand}</h2>
+                <p>\$${products[i].price}</p>
+                <img src="${products[i].image}">
+            </section>
+    `);
+                }
+            </script>
+        </main>
+    </div>
+    <h1>
+        Your One Stop Phone Shop-
+        <script>document.write(store_name);</script>'s
+    </h1>
+
+</body>
+
+
+</html>
