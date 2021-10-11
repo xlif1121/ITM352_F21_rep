@@ -1,25 +1,25 @@
+<script src="./products_data.js"></script>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="./products_data.js"></script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-   <script>
-    for(var count =1; eval("typeof name" + count) !='undefined' ;count++ ) {
 
-    document.write(`
+<body>
     <table border="1">
-    <tr><th>Number</th><th>Item</th></tr> 
-    <tr><td>${count}</td><td>${eval('name' + i)}</td></tr>
-    
-    `);
-    }
-</script>
-</table> 
+        <tbody><tr><th>Number</th><th>Item</th></tr> 
+            <script>
+                for (var count = 1; eval("typeof name" + count) != 'undefined'; count++) {
+                    document.write(`
+                    <tr><td>${count}</td><td>${eval('name' + count)}</td></tr>
+                    `);
+                }
+            </script>
+    </table>
 </body>
+
 </html>
