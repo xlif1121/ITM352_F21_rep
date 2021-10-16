@@ -1,6 +1,32 @@
+<style>
+    td {
+        border: 1px solid black;
+    }
+
+    tr {
+        border: 1px solid black;
+    }
+
+    tr:hover {background-color: yellow;}
+
+</style>
+
+<table id="table" style="border: 1px solid black;" onclick="
+new_row = this.appendChild(document.createElement('tr'));
+for (i=1; i <= this.rows[0].cells.length; i++){
+  new_cell = new_row.appendChild(document.createElement('td'))
+  new_cell.innerHTML = 'xxx';
+}
+">
+
+<tbody id = "prodTableBody">
+    <tr style="border: 1px solid black;">
+      <th style="border: 1px solid black;">Product Name</th>
+      <th>Price</th></tr>
+
 <script>
-        // product data
-        var product_quantities = [0, 2, 3, 4, 5];
+    // product data
+    // var product_quantities = [0, 2, 3, 4, 5];
     // array of all products
     // corresponds to product_quantities array
     // product_quantities[i] is the quantity for products[i]
@@ -12,22 +38,43 @@
         { 'name': 'large jawbreaker', 'price': 0.10 }
     ];
 
-    document.write(`
-    <table style="border: 1px solid black;text-align: center;" onclick="
-    this.">
-     <tr style="border: 1px solid black;"><th style="border: 1px solid black;">Product Name #</th><th>Price</th></tr>   
-    `)
-    for (let prodObj of products) { //use of will give the value , in=index
-        //for(let i =0; i<product_quantities.length; i++) {
-        document.write(`
-        
+    for (let i in products) { //use of will give the value , in=index and i have to use i instead of prodObj// let i=0; i<products.length; i++ will show the same things. 
 
-<tr style="border: 1px solid black;"><td style="border: 1px solid black;">${prodObj.name}</td><td>${prodObj.price}</td></tr>
-
-
-
-        `)
+        //for(let i in products) {
+            //if I use i, ${products[i].name}
+            //console.log(i);
+              document.write(`
+      <tr>
+        <td >${products[i].name}</td><td>${products[i].price}</td>
+      </tr>
+      `);
     }
     document.write(`</tbody></table>
-    `)
+    `);
+
 </script>
+</table>
+
+<input type ="button" value = "Delete Last Row"
+  onclick = "myDeleteFunction()"
+>
+
+<button onclick="myCreateFunction()">Add New Row</button>
+<script>
+    function myCreateFunction() {
+      var table = document.getElementById("table");
+      var row = table.insertRow(-1);
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      cell1.innerHTML = "New Row";
+      cell2.innerHTML = "New Row";
+    }
+    
+    function myDeleteFunction() {
+      document.getElementById("table").deleteRow(-1);
+    }
+    </script>
+    
+    </body>
+    </html>
+  
