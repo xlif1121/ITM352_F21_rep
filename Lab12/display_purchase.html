@@ -1,0 +1,14 @@
+<script>
+    let params = (new URL(document.location)).searchParams;
+
+    if(params.has('qty_textbox')) {
+    document.write(`Thank you for ordering ${params.get('qty_textbox')} things! `);
+    }else {
+    document.write(`You did not select any quantity yet! `);
+    
+    }
+
+</script>
+<script>
+
+</script>
