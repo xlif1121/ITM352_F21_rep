@@ -9,22 +9,43 @@
 </head>
 
 <body>
-    <form name="quantity_form" action="display_purchase.html" method="GET">
-    <label>quantity desired:</label>
-    <input name='qty_textbox' type="text" 
-    onkeyup="checkQuantityTextbox(this,qty_textbox_message);">
-    <span id='qty_textbox_message'>Enter a quantity</span>
-    <br>
-    <input type="submit" value="Purchase">
+    <form name="quantity_form" action="display_purchase.html" method="POST">
+        <label>quantity desired:</label>
+        <input name='qty_textbox' type="text" onkeyup="checkQuantityTextbox(this,qty_textbox_message);">
+        <span id='qty_textbox_message'>Enter a quantity</span>
+        <br>
+        <input type="submit" value="Purchase">
     </form>
 </body>
 
 </html>
+
+<script>
+     if (params.has('qty_textbox')) {
+        quantity_form["qty_textbox"].value = params.get('qty_textbox');  
+        checkQuantityTextbox(quantity_form["qty_textbox"]);
+    }
+
+</script>
+
+
 <script>
     function checkQuantityTextbox(theTextbox, theMsgSpan) {
+        console.log(theTextbox);
         // is the textbox value a non-neg int?
         var error_array = isNonNegInt(theTextbox.value, true);
         theMsgSpan.innerHTML = error_array.join(' ');
+    }
+
+    let params = (new URL(document.location)).searchParams;
+
+    if (params.has('qty_textbox')) {
+        qty1 = paarms.get('qty_textbox');
+        if (isNonNegInt(qty1)) {
+            document.write(`thank for you for ordering ${qty1} things!`);
+        } else {
+            document.write(`Invalid quantity!press the back button and try again.`);
+        }
     }
 
 
@@ -43,13 +64,25 @@
     }
 
     function displayPurchase() {
-        var qty= qty_textbox.value;
-        var err=isNonNegInt(qty,true);
-        if(err.length ==0) {
-            document.write(`Thank for you for ordering ${qty} things!`);
-        }else {
-            qty_textbox_message.innerHTML = <font color='red'>
-            ${err.join(' ') `Enter a vlid quantity!`}</font>
+        var qty = qty_textbox.value;
+        var err = isNonNegInt(qty, true);
+        if (err.length == 0) {
+            console.log = (`Thank for you for ordering ${qty} things!`);
+        } else {
+            theMsgSpan.innerHTML = `<font color="red">
+            ${err.join(' ')`Enter a valid quantity!`}</font>`;
         }
     }
+</script>
+
+
+<script>
+    if (params.has('qty_textbox')) {
+        quantity_form["qty_textbox"].value = params.get('qty_textbox');
+        checkQuantityTextbox(quantity_form["qty_textbox"]);
+        if (params.get('qty_textbox') > 0) {
+            //document.write(`Thank you for ordering ${params.get('qty_textbox')} things!`)
+            window.location.href = "display_purchase.html" + document.location.search;
+        }
+    };
 </script>
