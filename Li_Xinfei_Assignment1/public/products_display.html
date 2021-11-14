@@ -27,7 +27,7 @@
         if (params.has('purchase_submit')) {
             has_errors = false; // assume quantities are valid from the start
             total_qty = 0; // need to check if something was selected so we will look if the total > 0
-            
+
             for (i = 0; i < products.length; i++) {
                 if (params.has(`quantity${i}`)) {
                     a_qty = params.get(`quantity${i}`);
@@ -59,11 +59,11 @@
 
     <header>
         <h1>
-            Xinfei's Mugs Store
+            Xinfei's Mugs Store &#9749;
         </h1>
 
     </header>
-    <form name:"quantity_form" action="./invoice.html" method="GET">
+    <form name:"quantity_form" action="/process_form" method="post">
         <div>
             <main>
                 <script>
@@ -82,7 +82,11 @@
                 </script>
             </main>
         </div>
-        <footer>
+        <footer>            
+            <h5>
+                Choose Your Mugs~ &#129505;
+
+            </h5>
             <input type="submit" class="button" value="Purchase" name="purchase_submit">
 
         </footer>

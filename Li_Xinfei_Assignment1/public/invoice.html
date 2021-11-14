@@ -14,6 +14,7 @@
         }
     } else {
         document.write('no form submitted');
+        
     }
     console.log(quantities);
 </script>
@@ -35,9 +36,9 @@
         <tbody>
             <tr>
                 <th style="text-align: center;" width="43%">Item</th>
-                <th style="text-align: center;" width="11%">quantity</th>
-                <th style="text-align: center;" width="13%">price</th>
-                <th style="text-align: center;" width="54%">extended price</th>
+                <th style="text-align: center;" width="11%">Quantity</th>
+                <th style="text-align: center;" width="13%">Price</th>
+                <th style="text-align: center;" width="54%">Extended price</th>
             </tr>
             <script>
                 subtotal = 0;
@@ -59,10 +60,10 @@
                             document.write(`<font color="red">Make sure you double check your quantities!</font>`);
                         }
                 }
-                    
-
+                
                 //compute tax
-                var tax_rate = 0.045;
+            
+                var tax_rate = 0.05;
                 var tax = tax_rate * subtotal;
 
                 //compute shipping
@@ -77,6 +78,7 @@
                 }
                 //compute grant total
                 var total = subtotal + tax + shipping;
+                //from invoice WODs
             </script>
             <tr>
                 <td colspan="4" width="100%">&nbsp;</td>
@@ -110,9 +112,9 @@
             </tr>
         </tbody>
     </table>
-    <h5>SHIPPING POLICY IS:A subtotal $0 - $49.99 will be $15 shipping<br>A
-        subtotal $50.00-$100.00 will be $25 shipping<br>Subtotals over $100.00 will be charged 5% of the
-        subtotal amount.</h5>
+    <h5>&#x1F4CB;SHIPPING POLICY:<br>&#x1F33A; We will collect 5%  for tax<br>&#x1F4B2;A subtotal $0 - $49.99 will be $15 shipping<br>&#x1F4B0;A
+        subtotal $50.00-$100.00 will be $25 shipping<br>&#x1F4EB;Subtotals over $100.00 will be charged 5% of the
+        subtotal amount<br>&#x1F69A;Estimate transit time: 3-6 business days</h5>
     <input type="button" class="button" value="Back to Home" onclick="window.location.href = 'products_display.html';">
 </body>
 
