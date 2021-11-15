@@ -187,6 +187,10 @@ input {
   bottom: -300px;
 }
 
+input::-webkit-input-placeholder {
+  font-size: 8px;
+}
+
   section input {
     color: rgb(39, 39, 238);
     background: rgb(246, 221, 171);
@@ -208,8 +212,8 @@ input {
     color: rgb(56, 56, 56);
     text-align: center;
     position: absolute;
-    right: 8px;
-    bottom:-153px;
+    right: 90px;
+    bottom:-175px;
     z-index: 2000;
   }
 

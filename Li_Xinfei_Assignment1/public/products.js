@@ -26,3 +26,7 @@ var products=
             "image": "777.jpg"
             }
 ];
+
+if(typeof exports != 'undefined') {
+exports.products = products;
+}
