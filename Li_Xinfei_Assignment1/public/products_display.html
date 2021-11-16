@@ -26,7 +26,7 @@
         // form was submitted so check that quantities are valid then redirect to invoice if ok.
         if (params.has('purchase_submit')) {
             // check to if any quantity is invalid, then put alert 
-           
+
             for (i = 0; i < products.length; i++) {
                 if (params.has(`quantity${i}`)) {
                     a_qty = params.get(`quantity${i}`);
@@ -34,12 +34,12 @@
                     quantity_form[`quantity${i}`].value = a_qty;
                     checkQuantityTextbox(quantity_form[`quantity${i}`]); // show where the error is
                 }
-            } 
-             // alert user of errors if any
-            if(params.has('error')) { 
+            }
+            // alert user of errors if any
+            if (params.has('error')) {
                 var errors = JSON.parse(params.get('error'));
                 let error_str = '';
-                for(err in errors) {
+                for (err in errors) {
                     error_str += errors[err] + '\n';
                 }
                 alert(error_str);
@@ -56,7 +56,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Footwear Products</title>
-    <link href="https://fonts.googleapis.com/css?family=cherry+swash|Raalewy" rel="stylesheet">
     <link href="Products-style.css" rel="stylesheet">
 </head>
 
@@ -87,7 +86,7 @@
                 </script>
             </main>
         </div>
-        <footer>            
+        <footer>
             <h5>
                 Choose Your Mugs~ &#129505;
 

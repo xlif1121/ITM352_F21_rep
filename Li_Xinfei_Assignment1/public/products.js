@@ -26,7 +26,7 @@ var products=
             "image": "777.jpg"
             }
 ];
-
-if(typeof exports != 'undefined') {
+//Professor Port helped me with the codes below
+if(typeof exports != 'undefined') { // try to export this file to server.js
 exports.products = products;
 }

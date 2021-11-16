@@ -1,3 +1,5 @@
+/*--Borrowed and modified from WODs-smartphoneproducts,and Invoice, Labs, modified template from ww3schools.com*/
+
 /* General */
  
 
@@ -93,7 +95,7 @@ header {
 }
 
 
-
+/* Footer*/
 footer {
   position:relative;
   bottom: -250;
@@ -186,7 +188,7 @@ input {
   width: 190x;
   bottom: -300px;
 }
-
+/* Input */
 input::-webkit-input-placeholder {
   font-size: 8px;
 }
@@ -216,15 +218,25 @@ input::-webkit-input-placeholder {
     bottom:-175px;
     z-index: 2000;
   }
+/* invoice table*/
+table {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+  font-size: 20px;
+  width: 480px;
+  text-align: left;
+  border-collapse: collapse;
+  margin: 0 30px 30px 460px;
+}
 
-    table {
-      font-family: 'Cherry Swash', cursive;
-      font-size: 3rem;
-  }
+th, td {
+  text-align: left;
+  padding: 16px;
+}
+/* Button for product display html and invoice html*/
   .button {
     text-align: center;
     display: block;
-    margin: 0 auto;
+    margin: 0 750px ;
     padding: 15px 25px;
     font-size: 15px;
     cursor: pointer;
@@ -247,7 +259,7 @@ input::-webkit-input-placeholder {
     transform: translateY(4px);
 }
 
-/*invoice*/
+/*invoice font*/
 
 h5 {
   font-size: 1.5rem;
