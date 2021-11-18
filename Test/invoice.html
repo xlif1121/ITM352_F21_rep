@@ -4,7 +4,6 @@
 <script>
     let params = (new URL(document.location)).searchParams;
     var quantities = [];
-    //product quantities are in the querystring, get them and put into quantites array
     // form was submitted so process the invoice
     if (params.has('purchase_submit')) {
         for (i = 0; i < products.length; i++) {
@@ -47,12 +46,10 @@
             //Borrowed and modified from invoice 4 WODs
             //check if the quantites is valid or not, if it is good to go, then to invoice. 
             subtotal = 0;
-            total_qua = 0; //make the total quantities is 0 at frist
             for (i = 0; i < products.length; i++) {
-                if (quantities[i] > 0) {
+                if (quantities[i] > 0 && quantities[i] <= 100 && parseInt(quantities[i]) == quantities[i]) {
                     // product row
-                    total_qua += Number(quantities[i]); //convert string to number, in order to display number
-                    extended_price = quantities[i] * products[i].price;
+                    extended_price = quantities[i] * products[i].price
                     subtotal += extended_price;
                     document.write(`
       <tr>
@@ -66,15 +63,14 @@
                 }
             }
             //compute tax
-
             var tax_rate = 0.04;
             var tax = tax_rate * subtotal;
 
             //compute shipping
-            if (total_qua <= 49) { //if the total quantites is under 50, then free shipping
+            if (subtotal > 150) {
                 shipping = 0;
             }
-            else if (total_qua <= 200) { //if the total quantites 50-200, then we will charge $15 for shipping
+            else if (subtotal <= 150) {
                 shipping = 15;
             }
             else {
@@ -84,12 +80,7 @@
             var total = subtotal + tax + shipping;
 
         </script>
-        <tr>
-            <td style="text-align: center;font-family: Garamond;" colspan="3" width="67%">Total Quantities</td>
-            <td width="54%">
-                <script>document.write(total_qua);</script>
-            </td>
-        </tr>
+
         <tr>
             <td style="text-align: center;font-family: Garamond;" colspan="3" width="67%">Sub-total</td>
             <td width="54%">$
@@ -122,11 +113,10 @@
 
     <h5 style="text-shadow:1px 1px 0 rgb(97, 108, 112)">&#x1F33A;<strong>TAX POLICY:</strong><br> The Hawaii (HI) state
         sales tax rate is currently 4%, so we will collect 4% for tax<br>
-        &#x1F69A;<strong>SHIPPING POLICY:</strong>
-        <br>Free shipping on total quantities under 50 items 
-        <br>Total quantities 50-200 items will charged $15.00 for shipping
-        <br>Total quantities over 200 will be charged 5% of the subtotal amount
-        <br>All orders are processed within 3-6 business days</h5>
+        &#x1F69A;<strong>SHIPPING POLICY:</strong><br>Free shipping on subtotals over $150.00 <br>Subtotals under
+        $150.00 will
+        charged $15.00 for shipping<br>Subtotals over $150.00 will be charged 5% of the
+        subtotal amount<br>All orders are processed within 3-6 business days</h5>
 
     <input type="button" class="button" value="Back to Home" onclick="window.location.href = 'products_display.html';">
 </body>
