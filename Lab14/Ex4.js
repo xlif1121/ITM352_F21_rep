@@ -60,7 +60,7 @@ app.get("/login", function (request, response) {
     response.send(str);
  });
 
- app.post("/register", function (request, response) {
+ app.post("/register", function (req, res) {
     // process a simple register form
     username = req.body["username"];
   user_data[username] = {};
