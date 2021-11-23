@@ -62,7 +62,18 @@ app.get("/login", function (request, response) {
 
  app.post("/register", function (request, response) {
     // process a simple register form
- });
+    username = req.body["username"];
+  user_data[username] = {};
+  user_data[username]["name"] = req.body['fullname'];
+  user_data[username]["password"]= req.body['password'];
+  user_data[username]["email"] = req.body['email'];
+  
+  
+    fs.writeFileSync(filename, JSON.stringify(user_data), "utf-8");
+    res.redirect('/invoice.html?' + queryString.stringify(req.query));
+  
+});
+
 
 app.post("/login", function (request, response) {
     // Process login form POST and redirect to logged in page if ok, back to login page if not
