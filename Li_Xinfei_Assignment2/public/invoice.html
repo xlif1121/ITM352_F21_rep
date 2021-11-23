@@ -1,6 +1,8 @@
 <!--Borrowed and modified from invoice 4 WODs, Labs, Assignment1 workshop, modified template from ww3schools.com-->
 <script src="./products.js" type="text/javascript"></script>
 
+<script src="./user_data.json" type="json"></script>
+
 <script>
     let params = (new URL(document.location)).searchParams;
     var quantities = [];
@@ -13,9 +15,6 @@
                 quantities[i] = a_qty;
             }
         }
-    } else {
-        document.write('no form submitted');
-
     }
     console.log(quantities);
 </script>

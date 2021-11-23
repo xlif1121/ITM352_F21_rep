@@ -6,6 +6,10 @@ var myParser = require("body-parser");
 // get products.js
 var data = require('./public/products.js');
 var products = data.products;
+//to get the user data.json
+var filename = './user_data.json';
+var fs = require('fs');
+const { request, response } = require('express');
 //set how many products quantities we have in stock
 products.forEach((prod, i) => { prod.inventory = 100; });
 var querystring = require("querystring");
@@ -35,6 +39,54 @@ function isNonNegInt(q, return_errors = false) {
 }
 //Borrowed and modified from Lab 13
 app.use(myParser.urlencoded({ extended: true }));
+// borrowed from Lab 14 
+if (fs.existsSync(filename)) {
+    var data = fs.readFileSync(filename, 'utf-8');
+    var user_data = JSON.parse(data);
+  
+  } else {
+    console.log(`${filename} does not exist!`);
+  }
+
+
+  //this process the login form
+app.post("/process_login", function (req, res) {
+
+    var the_username = req.body.username.toLowerCase(); //username in lowercase
+  
+    if (typeof user_data[the_username] != 'undefined') { //matching username
+      if (user_data[the_username].password == req.body.password) { //if all the info is correct, then redirect to the invoice page
+        res.redirect('/invoice.html?' + queryString.stringify(req.query));
+        return;
+  
+      } else { //if the pw has error, push an error
+        req.query.username = the_username;
+        req.query.LoginError = 'Invalid Password';
+      }
+    } else { //if the username has error, push an error 
+      req.query.LoginError = 'Invalid Username';
+    }  
+    console.log('./login.html?' + queryString.stringify(req.query));
+    res.redirect('./login.html?' + queryString.stringify(req.query));//redurect to login page
+  });
+  
+  //this process the register form
+  app.post("/process_register", function (req, res) {
+  
+    username = req.body["username"];
+    user_data[username] = {};
+    user_data[username]["name"] = req.body['fullname'];
+    user_data[username]["password"]= req.body['password'];
+    user_data[username]["email"] = req.body['email'];
+    
+    
+      fs.writeFileSync(filename, JSON.stringify(user_data), "utf-8");
+      res.redirect('/invoice.html?' + queryString.stringify(req.query));
+    
+  });
+
+
+
 // process purchase request (validate quantities, check quantity available)
 app.post("/process_form", function (req, res, next) {
     // check the quantity, if it is not valid, send it to the products display page in order to repurchase
@@ -66,7 +118,7 @@ app.post("/process_form", function (req, res, next) {
         for (i = 0; i < products.length; i++) {
             products[i].inventory -= Number(POST['quantity' + i]); // remove quantity for i'th product from inventory 
         }
-        res.redirect("./invoice.html?" + QString); // if it is valid, send to invoice
+        res.redirect("./login.html?" + QString); // if it is valid, send to login page
     } else {
         let errObj = { 'error': JSON.stringify(errors) }; // show what is the errors
         QString += '&' + querystring.stringify(errObj);
