@@ -27,6 +27,6 @@ var products=
             }
 ];
 //Professor Port helped me with the codes below
-if(typeof exports != 'undefined') { // try to export this file to server.js
+if(typeof exports != 'undefined') { // try to exports this file to server.js
 exports.products = products;
 }
