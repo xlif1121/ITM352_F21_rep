@@ -1,4 +1,4 @@
-/*Borrowed and modified from Labs and Assignment1, modified template from ww3schools.com
+/*Borrowed and modified template from ww3schools.com
 * {box-sizing: border-box}
 /* Add padding to containers */
 .container {
@@ -52,7 +52,7 @@
     background-color: #f1f1f1;
     text-align: center;
   }
-  
+/*for button*/
   .button {
     position: relative;
     background-color: #04AA6D;

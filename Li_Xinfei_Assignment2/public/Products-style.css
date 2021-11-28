@@ -1,7 +1,6 @@
-/*--Borrowed and modified from WODs-smartphoneproducts,and Invoice, Labs, modified template from ww3schools.com*/
+/*--Borrowed from my Assignment 1 and modified from WODs-smartphoneproducts,and Invoice, Labs, modified template from ww3schools.com*/
 
 /* General */
- 
 
 html {
   
@@ -225,7 +224,7 @@ table {
   width: 480px;
   text-align: left;
   border-collapse: collapse;
-  margin: 0 30px 30px 460px;
+  margin: 0 30px 30px 350px;
 }
 
 th, td {
@@ -236,7 +235,7 @@ th, td {
   .button {
     text-align: center;
     display: block;
-    margin: 0 750px ;
+    margin: 0 659px ;
     padding: 15px 25px;
     font-size: 15px;
     cursor: pointer;
@@ -264,4 +263,9 @@ th, td {
 h5 {
   font-size: 1.5rem;
   color: #54a8ec;
+}
+.center {
+  float: right;
+  width: 499px;
+  padding: 8px;
 }
