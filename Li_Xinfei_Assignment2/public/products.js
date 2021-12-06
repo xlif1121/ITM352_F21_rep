@@ -1,3 +1,4 @@
+/*Xinfei Li Fall 2021*/ 
 /*Modified my Assignment 1  and borrowed code from WODs smartphoneproducts 3,and Prof. Port's screencast*/
 
 var products =
