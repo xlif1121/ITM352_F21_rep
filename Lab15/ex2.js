@@ -66,44 +66,83 @@ app.get("/login", function (request, response) {
     response.send(str);
 });
 
-app.get("/register", function (request, response) {
-    // Give a simple register form
+//add the submitted form data to users_reg_data then saves this updated object to user_data.json using JSON.stringify() 
+app.get("/login", function (request, response) {
+    //check if already logged in by seeing if the username cookies exists
+    var welcome_str = 'Welcome! You need to login.';
+        if (typeof request.cookies.username !='undefined'){
+        welcome_str = `Welcome ${request.cookies.username}! You logged in last on ${request.session.lastLoginTime}`
+        }
+    // Give a simple login form
     str = `
-        <body>
-        <form action="" method="POST">
-        <input type="text" name="username" size="40" placeholder="enter username" ><br />
-        <input type="password" name="password" size="40" placeholder="enter password"><br />
-        <input type="password" name="repeat_password" size="40" placeholder="enter password again"><br />
-        <input type="email" name="email" size="40" placeholder="enter email"><br />
-        <input type="submit" value="Submit" id="submit">
-        </form>
-        </body>
+<body>
+<form action="" method="POST"> 
+<input type="text" name="username" size="40" placeholder="enter username" ><br />
+<input type="password" name="password" size="40" placeholder="enter password"><br />
+<input type="submit" value="Submit" id="submit">
+</form>
+</body>
     `;
     response.send(str);
 });
 
 app.post("/register", function (request, response) {
+    username = request.body.username;
     // process a simple register form
+    if (typeof users_reg_data[username] == 'undefined' && (request.body.password == request.body.repeat_password)) {
+        users_reg_data[username] = {};
+        users_reg_data[username].password = request.body.password;
+        users_reg_data[username].email = request.body.email;
+
+        fs.writeFileSync('./user_data.json', JSON.stringify(users_reg_data));
+        response.redirect('./login');
+    } else {
+        response.redirect('/register');
+    }
 });
 
 app.post("/login", function (request, response) {
-    // Process login form POST and redirect to logged in page if ok, back to login page if not
-    let login_username = request.body['username'] // check if username exists, then check password entered matches password stored
-    let login_password = request.body['password']
-    if (typeof user_data[login_username] != 'undefined') {
-        if (user_data[login_username]["password"] == login_password) { // getting the stored password and matching against login_password
-            if (typeof request.session['last login'] != 'undefined') {
-                var last_login = request.session['last login'];
 
-            } else {
-                //request.session['last login'] = 'first time logging in';
-                var last_login = 'first login';
+
+    // Process login form POST and redirect to logged in page if ok, back to login page if not 
+    let login_username = request.body['username'];
+    let login_password = request.body['password'];
+    // check if username exeist, then check password entered match password stored
+    if (typeof users_reg_data[login_username] != 'undefined') {
+        // take "password" and check if the password in the textbox is right
+        if (users_reg_data[login_username]["password"] == login_password) {
+            //Get last login time from session if it exists. If not, create first login
+
+            var lastLoginTime = 'first login!';
+            if (typeof request.session.last_login != 'undefined') {
+                lastLoginTime = request.session.lastLogin;
             }
-            request.session(['last login'] = new Date()).toISOString() // put login data into session
-            response.send(`your last loggin is on ${last_login} is logged in`);
-        } else {
-            response.redirect('/login');
-        }
+            //process login form POST and redirect to logged in page if ok, back to login page if not
+            login_username = request.body['username'];
+            login_password = request.body['password'];
+            console.log(lastLoginTime);
+            if (typeof users_reg_data[login_username] != 'undefined') {
+                if (users_reg_data[login_username].password == login_password) {
+                    request.session.lastLogin = new Date();
+                    response.cookie('username', login_username);
+                    delete
+                    response.send(`${login_username} is logged in. You last logged in on ${lastLoginTime}`);
+                    return;
+                } else {
+                    response.redirect('/login');
+                }
+
+            }
+        };
+
+        //put login date and time into session
+        request.session['last login'] = new Date().toISOString();
+        response.send(`You last loggin in on ${last_login}`);
+        // if matches, 
+        response.send(`${login_username} is loged in`);
+    } else {
+        // if the password doesn't match,             
+        response.redirect(`/login`);
     }
 });
 

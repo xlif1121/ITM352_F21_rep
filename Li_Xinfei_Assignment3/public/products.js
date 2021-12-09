@@ -1,4 +1,7 @@
-/*Modified my Assignment 1  and borrowed code from WODs smartphoneproducts 3,and Prof. Port's screencast*/
+/*
+Xinfei Li Fall 2021
+Modified my Assignment 1  and borrowed code from WODs smartphoneproducts 3,and Prof. Port's screencast
+*/
 
 var products =
     [
@@ -89,66 +92,66 @@ var plate = [
 var spoon = [
 
     {
-        "name": "",
+        "name": "Stainless Steel Spoon(2 pcs)",
         "price": 5.00,
-        "image": ".jpg"
+        "image": "711.jpg"
     },
     {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
+        "name": "Wooden Spoon(4 pcs)",
+        "price": 10.00,
+        "image": "722.jpg"
     },
     {
-        "name": "",
-        "price": 6.00,
-        "image": ".jpg"
+        "name": "Ceramic Spoon(4 pcs)",
+        "price": 10.00,
+        "image": "733.jpg"
     },
     {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
+        "name": "Japnese Style Spoon(4 pcs)",
+        "price": 10.00,
+        "image": "744.jpg"
     },
     {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
+        "name": "Floral Spoon(4 pcs)",
+        "price": 10.00,
+        "image": "755.jpg"
     }
 ];
 
 var chopsticks = [
 
     {
-        "name": "",
+        "name": "Bamboo Chopsticks(2 pcs)",
+        "price": 8.00,
+        "image": "811.jpg"
+    },
+    {
+        "name": "Line Friends Chopsticks(3 pcs)",
+        "price": 15.00,
+        "image": "822.jpg"
+    },
+    {
+        "name": "The Cherry Blossom Chopsticks(5 pcs)",
         "price": 10.00,
-        "image": ".jpg"
+        "image": "833.jpg"
     },
     {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
+        "name": "Animal Chopsticks(4 pcs)",
+        "price": 13.00,
+        "image": "844.jpg"
     },
     {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
-    },
-    {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
-    },
-    {
-        "name": "",
-        "price": 5.00,
-        "image": ".jpg"
+        "name": "Chinese-Style Chopsticks(5 pcs)",
+        "price": 25.00,
+        "image": "855.jpg"
     }
 ];
 
-var allProducts={
-    "mugs":mugs,
-    "plate":plate,
-    "spoon":spoon,
-    "chopsticks":chopsticks
+var allProducts = {
+    "mugs": mugs,
+    "plate": plate,
+    "spoon": spoon,
+    "chopsticks": chopsticks
 }
 
 if (typeof exports != 'undefined') { // try to exports this file to server.js
