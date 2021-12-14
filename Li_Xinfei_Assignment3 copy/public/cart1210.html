@@ -1,0 +1,118 @@
+<!--
+    Xinfei Li Fall 2021 
+    Borrowed from my assignment 1 and modified from WODs, Labs, and Prof. Port's screencast, modified template from ww3schools.com
+-->
+<script src="./products.js" type="text/javascript"></script>
+<script src="/Li_Xinfei_Assignment3 copy/user_data.json" type="json"></script>
+<script src="function.js" type="text/javascript"></script>
+
+<script>
+    loadJSON('get_cart', function (response) {
+                // Parsing JSON string into object
+                shopping_cart = JSON.parse(response);
+            });
+    </script>
+
+<script>
+    let params = (new URL(document.location)).searchParams;
+    var quantities = [];
+    //product quantities are in the querystring, get them and put into quantites array
+    // form was submitted so process the invoice
+    if (params.has('purchase_submit')) {
+        for (i = 0; i < allProducts[product_key].length; i++) {
+            if (params.has(`quantity${i}`)) {
+                a_qty = params.get(`quantity${i}`);
+                quantities[i] = a_qty;
+            }
+        }
+    }
+    console.log(quantities);
+</script>
+<script>
+    //reference from lab
+    function generate_item_rows(obj){
+    for(var i = 0; i < obj.length; i++){
+      extended_price = obj[i].price * obj[i].quantity;
+      subtotal += extended_price;
+      document.write(`
+        <tr>
+            <td width="43%"td width="43%">${obj[i].name}</td>
+            
+            <td align="center" width="11%">
+            <form action="/add_one" method="POST">
+            <input type="hidden" name="ProductName" value="${obj[i].name}">
+            <input type="hidden" value="1" name="add">
+            <input type='submit' value="+">
+            </form>
+            <input type="text" value="${obj[i].quantity}" name="quantity">
+            
+            <form action="/remove_one" method="POST">
+            <input type="hidden" name="ProductName" value="${obj[i].name}">
+            <input type="hidden" value="1" name="reduce">
+            <input type='submit' value="-">
+            </form>
+            </td>
+            
+            <td align="center" width="13%">\$${parseInt(obj[i].price)}</td>
+            <td width="13%">\$${parseInt(extended_price)}
+            <form action="/remove-from-cart" method="POST">                
+            <input type="hidden" name="ProductName" value="${obj[i].name}">
+            <input type="submit" value="remove ">  
+            </td>
+            </form>
+          </tr>
+        `);
+    }
+  }
+  </script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Products-style.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Document</title>
+
+</head>
+
+<body>
+
+
+<div class="center"><h6><b>&#x1F60A;&#x1F6D2;Aloha! Here is Your Basket!</b><h6></div>
+
+
+    <table class="w3-table-all w3-card-4">
+        <thead>
+            <tr class="w3-yellow">
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Extended price</th>
+        </thead>
+        <script>
+            for(product_key in AllProducts) {
+              for(i=0; i<AllProducts[product_key].length; i++) {
+                  if(typeof shopping_cart[product_key] == 'undefined') continue;
+                  qty = shopping_cart[product_key][i];
+                  if(qty > 0) {
+                    document.write(`<tr><td>${qty}</td><td>${AllProducts[product_key][i].name}</td><tr>`);
+          
+                  }
+              }
+          }
+          
+            
+          </script>
+    </table>
+    <form action="/confirm" method=GET>
+
+        <input type=submit value="Confirm">
+        </form>
+     <input type="button" class="button2" value="Checkout Shipped Items"  name="purchase_submit" onclick="location.href='invoice.html';">
+   <input type="button" class="button3" value="Continue Shopping" onclick="location.href='products_display.html';">
+</body>
+
+</html>
