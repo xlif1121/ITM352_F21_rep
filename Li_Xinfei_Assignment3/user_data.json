@@ -1,0 +1,37 @@
+{
+    "xlif": {
+        "name": "Xinfei",
+        "password": "password",
+        "email": "xinfeili@hawaii.edu"
+    },
+    "x1234": {
+        "name": "xx yyy",
+        "password": "56789:",
+        "email": "xlif1121@gmail.com"
+    },
+    "xlif1121": {
+        "name": "Xinfei Li",
+        "password": "56789:",
+        "email": "xinfeili@hawaii.edu"
+    },
+    "q123": {
+        "name": "qwe qeq",
+        "password": "56789:",
+        "email": "xlif1121@gmail.com"
+    },
+    "itm352": {
+        "name": "ITM 352",
+        "password": "kvehiv",
+        "email": "itm352@hawaii.edu"
+    },
+    "dport": {
+        "name": "Dan Port",
+        "password": "tsvxwteww{svh",
+        "email": "dport@hawaii.edu"
+    },
+    "kazman": {
+        "name": "Rick Kazman",
+        "password": "oe~qerteww{svh",
+        "email": "kazman@hawaii.edu"
+    }
+}

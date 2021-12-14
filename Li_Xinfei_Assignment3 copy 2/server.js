@@ -1,13 +1,15 @@
 /*Xinfei Li Fall 2021*/
-/*Modified my Assignment 1 server and borrowed code from w3resource, and W3school, Lab 14, assignment 2 code examples,
-assignment 3 code examples and Prof. Port's screencast*/
+/*Modified and borrowed code from my Assignment 2 server, w3resource,Stack overflow, Chole Cheng & Caixin, and W3school, 
+Lab 14, assignment 2 code examples, assignment 3 code examples and Prof. Port's screencast and help*/
 //Borrowed from Lab 13
 var express = require('express');
 var app = express();
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
-
-//var myParser = require("body-parser");
+//Set for nodemailer
+var nodemailer = require('nodemailer');
+const e = require('express');// encryption
+const shift = 4; 
 // Professor Port helped me with the code below
 // get products.js
 var data = require('./products.js');
@@ -52,14 +54,6 @@ app.post("/get_cart", function (req, res) {
   res.json(req.session.cart);
 });
 
-//to checkout the items in cart
-
-//app.get("/confirm", function (request, response) {}
-
-// send user to the invoice.html if they login
-
-//send them to the login.html if they is not login
-
 
 // Professor Port helped me with this code
 // Use GET to (get)convert my products.js file
@@ -93,23 +87,40 @@ if (fs.existsSync(filename)) {
 
 
 // -------------- Login -------------------- //
+//get help from Professor Port
 app.get('/login.html', function (req, res, next) {
   // save reffering page, unless it's login.html
-  if(!req.header('Referrer').includes('login.html')) { 
-    req.session.login_refferer =  req.header('Referrer');
+  if (!req.header('Referrer').includes('login.html')) {
+    req.session.login_refferer = req.header('Referrer');
   }
   next();
 });
 
-//this process the login form
+//-------------Password Encryption(Extra Credit)------------//
+////Borrowed and modified code from Stack overflow, Chloe Cheng and Caixin Zhang
+function encrypt(password){
+  var encrypted = [];
+  var encrypted_result = "";
+
+//encrypt the password Referece: Stack overflow 
+//save the new password as encrypted
+  for (var i = 0; i < password.length; i++){
+    encrypted.push(password.charCodeAt(i)+shift);
+    encrypted_result += String.fromCharCode(encrypted[i]);
+  }
+  return encrypted_result;
+}
+
+//this process the login form refernce: My assignment2, lab15, lab14, and Chole Cheng and Caixin Zheng
 app.post("/process_login", function (req, res) {
   // Process login form POST and redirect to logged in page if ok, back to login page if not
   var the_username = req.body.username.toLowerCase(); //username in lowercase
-
+  var the_password = req.body.password;
+  let encrypted_password_input = encrypt(the_password);
   if (typeof user_data[the_username] != 'undefined') { //matching username
-    if (user_data[the_username].password == req.body.password) { //if all the info is correct, then redirect to the referer paage
-      // send the user a login cookies, and expire after 10 mins
-      res.cookie('login',the_username,{maxAge: 10*60*1000});
+    if (user_data[the_username].password == encrypted_password_input) { //if all the info is correct, then redirect to the referrer page
+      // send the user a login cookies, and expire after 30 mins
+      res.cookie('login', the_username, { maxAge: 30 * 60 * 1000 });
       res.redirect(req.session.login_refferer);//if good to go, send to invoice page with the username and email to the string
       return;
 
@@ -126,16 +137,16 @@ app.post("/process_login", function (req, res) {
 });
 
 
-//-------------Logout------------//
-//app.get("/logout", function (req, res, next) {
- // response.clearCookie("");
-//});
+
+//----------------Logout--------------//
+//this process the logout form Reference: lab 15 from Professor Port 
+app.get("/logout", function (req, res, next) {
+  res.clearCookie("login");// to clear the cookie
+  res.redirect(req.session.login_refferer);//take the user back to the referrer page
+});
 
 
-//-------------Password Encryption------------//
 
-  //loop through the passwords and save the new password as encrypted
- 
 
 // -------------- Register --------------------//
 //to make sure the user put in valid information
@@ -194,15 +205,16 @@ app.post("/process_register", function (req, res) {
   if (req.body.password !== req.body.repeat_password) {  // check if the repeat password is matching password
     reg_errors['repeat_password'] = 'Repeat password not the same as password!';// if not, show this
   }
-
+  //this process the register form refernce: My assignment2, lab15, lab14, and Chole Cheng and Caixin Zheng
   // If no errors then save new user and redirect to invoice, otherwise back to registration form and note errors
+  let encrypted_pass = encrypt(req.body.password);
   if (Object.keys(reg_errors).length == 0) {
     //If user enterd valid information, then save and store in JSON file 
     console.log('no errors')
     var username = req.body['username'].toLowerCase();
     user_data[username] = {};
     user_data[username]["name"] = req.body['fullname'];
-    user_data[username]["password"] = req.body['password'];
+    user_data[username]["password"] = encrypted_pass;
     user_data[username]["email"] = req.body['email'];
 
     fs.writeFileSync(filename, JSON.stringify(user_data), "utf-8");
@@ -273,9 +285,9 @@ app.post("/process_form", function (req, res, next) {
 });
 
 app.post("/confirm", function (req, res) {
-console.log(req.cookies);
+  console.log(req.cookies);
   // if user not logged in, send them to login
-  if(typeof req.cookies["login"] == 'undefined') {
+  if (typeof req.cookies["login"] == 'undefined') {
     res.redirect(`./login.html`);
     return;
   }
@@ -290,12 +302,39 @@ console.log(req.cookies);
 
     // email invoice to user
     let username = req.cookies["login"];
+  //var the_email = req.cookies[user_data][username].email;
+  // Set up mail server. Only will work on UH Network due to security restrictions
+  var transporter = nodemailer.createTransport({
+    host: "mail.hawaii.edu",
+    port: 25,
+    secure: false, // use TLS
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false
+    }
+  });
+  //get the username and email from user data
+  var user_email = user_data[req.cookies['email']];
+  var mailOptions = {
+    from: 'xinfeili@hawaii.edu',
+    to: user_email,
+    subject: 'Thank you for your purchase! Here is your receipt', //send a thank you message and invoice to user's email
+    html: req.body.invoicehtml,
 
+  };
 
-    
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      status_str += '<br>There was an error and your invoice could not be emailed :('; //if invoice unable to send
+    } else {
+      status_str += `<br>Your invoice was mailed to ${user_email}`;
+    }
+    response.json({ "status": status_str});
+  });
+
     // send to invoice.html
     let params = new URLSearchParams();
-    params.append('username',username);
+    params.append('username', username);
     params.append('email', user_data[username].email);
     res.redirect(`./invoice.html?${params.toString()}`);
   } else {
@@ -308,9 +347,9 @@ console.log(req.cookies);
 
 //Creating an 0invoice to both print and email--from as3 code examples---incomplete
 //app.get("/checkout", function (request, response) {
-  // Generate HTML invoice string
+// Generate HTML invoice string
 
-  // Set up mail server. Only will work on UH Network due to security restrictions
+// Set up mail server. Only will work on UH Network due to security restrictions
 
 
 // route all other GET requests to files in public 
