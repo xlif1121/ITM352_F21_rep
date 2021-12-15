@@ -1,10 +1,16 @@
 /*Xinfei Li Fall 2021*/
-/*Modified my Assignment 1 server and borrowed code from w3resource, and W3school, Lab 14, assignment 2 code examples,
-assignment 3 code examples and Prof. Port's screencast*/
+/*Modified and borrowed code from my Assignment 2 server, w3resource,Stack overflow, Chole Cheng & Caixin, and W3school, 
+Lab 14, assignment 2 code examples, assignment 3 code examples and Prof. Port's screencast and help*/
 //Borrowed from Lab 13
 var express = require('express');
 var app = express();
-//var myParser = require("body-parser");
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+//Set for nodemailer
+var nodemailer = require('nodemailer');
+// encryption
+const e = require('express');
+const shift = 4;
 // Professor Port helped me with the code below
 // get products.js
 var data = require('./products.js');
@@ -13,12 +19,10 @@ var allProducts = data.allProducts;
 var fs = require('fs');
 //set filename equal to user data.json
 var filename = './user_data.json';
-var nodemailer = require('nodemailer');
-var querystring = require("querystring");
-// used to store quantity data from products disiplay page
-var temp_qty_data = {};
+//set up session
 var session = require('express-session');
 const { request } = require('express');
+//From Lab 15 intializes sessions
 app.use(session({ secret: "MySecretKey", resave: true, saveUninitialized: true }));
 // Routing 
 
@@ -29,12 +33,7 @@ app.all('*', function (request, response, next) {
   next();
 });
 
-
-//app.post("/get_products_data", function (request, response) {
-//response.json(data);
-//});
-
-//To set up shopping cart---incomplete
+//-------To set up shopping cart-----//
 app.get("/add_to_cart", function (request, response) {
   var product_key = request.query['prod_key']; // get the product key sent from the form post
   var quantities = request.query['quantities'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
@@ -42,6 +41,7 @@ app.get("/add_to_cart", function (request, response) {
   response.redirect('./cart.html');
 });
 
+//------------Set up get cart-------//
 //microservice return the shopping cart data from current session
 app.post("/get_cart", function (req, res) {
   if (typeof req.session.cart == 'undefined') {
@@ -49,14 +49,6 @@ app.post("/get_cart", function (req, res) {
   }
   res.json(req.session.cart);
 });
-
-//to checkout the items in cart
-
-//app.get("/confirm", function (request, response) {}
-
-// send user to the invoice.html if they login
-
-//send them to the login.html if they is not login
 
 
 // Professor Port helped me with this code
@@ -66,7 +58,6 @@ app.get('/products.js', function (request, response, next) {
   var products_str = `var allProducts = ${JSON.stringify(allProducts)};`;
   response.send(products_str);
 });
-
 
 // Borrowed and modified from Lab 12 order_page.html
 function isNonNegInt(q, return_errors = false) {
@@ -91,20 +82,41 @@ if (fs.existsSync(filename)) {
 
 
 // -------------- Login -------------------- //
-//this process the login form
+//get help from Professor Port
+app.get('/login.html', function (req, res, next) {
+  // save reffering page, unless it's login.html
+  if (!req.header('Referrer').includes('login.html')) {
+    req.session.login_refferer = req.header('Referrer');
+  }
+  next();
+});
+
+//-------------Password Encryption(Extra Credit)------------//
+////Borrowed and modified code from Stack overflow, Chloe Cheng and Caixin Zhang
+function encrypt(password) {
+  var encrypted = [];
+  var encrypted_result = "";
+
+  //encrypt the password Referece: Stack overflow 
+  //save the new password as encrypted
+  for (var i = 0; i < password.length; i++) {
+    encrypted.push(password.charCodeAt(i) + shift);
+    encrypted_result += String.fromCharCode(encrypted[i]);
+  }
+  return encrypted_result;
+}
+
+//this process the login form refernce: My assignment2, lab15, lab14, and Chole Cheng and Caixin Zheng
 app.post("/process_login", function (req, res) {
   // Process login form POST and redirect to logged in page if ok, back to login page if not
   var the_username = req.body.username.toLowerCase(); //username in lowercase
-
+  var the_password = req.body.password;
+  let encrypted_password_input = encrypt(the_password);
   if (typeof user_data[the_username] != 'undefined') { //matching username
-    if (user_data[the_username].password == req.body.password) { //if all the info is correct, then redirect to the invoice page
-      // Put the stored quanity data into the query
-      //add username to query to know who's login
-      //to get the username and email from the informaation that user entered, and store it in the temp_qty_data
-      temp_qty_data['username'] = the_username;
-      temp_qty_data['email'] = user_data[the_username].email;
-      let params = new URLSearchParams(temp_qty_data); //put the temp_qty_data inside the params
-      res.redirect('/invoice.html?' + params.toString());//if good to go, send to invoice page with the username and email to the string
+    if (user_data[the_username].password == encrypted_password_input) { //if all the info is correct, then redirect to the referrer page
+      // send the user a login cookies, and expire after 30 mins
+      res.cookie('login', the_username, { maxAge: 30 * 60 * 1000 });
+      res.redirect(req.session.login_refferer);//if good to go, send to invoice page with the username and email to the string
       return;
 
     } else { //if the password has error, push an error
@@ -118,6 +130,17 @@ app.post("/process_login", function (req, res) {
   params = new URLSearchParams(req.query);
   res.redirect('./login.html?' + params.toString());//redirect to login page if there is a error
 });
+
+
+
+//----------------Logout--------------//
+//this process the logout form Reference: lab 15 from Professor Port 
+app.get("/logout", function (req, res, next) {
+  res.clearCookie("login");// to clear the cookie
+  res.redirect(req.session.login_refferer);//take the user back to the referrer page
+});
+
+
 
 
 // -------------- Register --------------------//
@@ -177,24 +200,24 @@ app.post("/process_register", function (req, res) {
   if (req.body.password !== req.body.repeat_password) {  // check if the repeat password is matching password
     reg_errors['repeat_password'] = 'Repeat password not the same as password!';// if not, show this
   }
-
+  //this process the register form refernce: My assignment2, lab15, lab14, and Chole Cheng and Caixin Zheng
   // If no errors then save new user and redirect to invoice, otherwise back to registration form and note errors
+  let encrypted_pass = encrypt(req.body.password);
   if (Object.keys(reg_errors).length == 0) {
     //If user enterd valid information, then save and store in JSON file 
     console.log('no errors')
     var username = req.body['username'].toLowerCase();
     user_data[username] = {};
     user_data[username]["name"] = req.body['fullname'];
-    user_data[username]["password"] = req.body['password'];
+    user_data[username]["password"] = encrypted_pass;
     user_data[username]["email"] = req.body['email'];
 
     fs.writeFileSync(filename, JSON.stringify(user_data), "utf-8");
-    // Put the stored quanitiy data into the temp_qty_data
-    //get the username and email from the register information
-    temp_qty_data['username'] = username;
-    temp_qty_data['email'] = user_data[username]["email"];
-    let params = new URLSearchParams(temp_qty_data);
-    res.redirect('/invoice.html?' + params.toString());// if good to go, send the user to invoice page with query string
+  // send the user a login cookies after they register for an account, and expire after 30 mins
+    res.cookie('login', username, { maxAge: 30 * 60 * 1000 });
+    //take them back to the last page, which is the refferer page
+    res.redirect(req.session.login_refferer);
+    return;
   }
 
   //if error occurs, redirect to register page
@@ -256,42 +279,137 @@ app.post("/process_form", function (req, res, next) {
 });
 
 app.post("/confirm", function (req, res) {
-  let POST = req.body;
-  var product_key = POST["prods_key"];
-  console.log(POST);
+  let username = req.cookies["login"];
+  console.log(req.cookies);
+  // if user not logged in, send them to login
+  if (typeof req.cookies["login"] == 'undefined') {
+    res.redirect(`./login.html`);
+    return;
+  }
+
+  // check if quanties in cart are still available. If not, send them back to cart to update.
+  
+  //  Othwrwise  remove from inventory, email invoice, and  go to invoice
+
   var errors = {};
-
   if (JSON.stringify(errors) === '{}') {
-    // keep the quanity data in the sesssion 
-    if (typeof req.session.cart == 'undefined') {
-      req.session.cart = {};
-    }
-    req.session.cart[product_key] = req.body;
-    console.log(req.session.cart);
-    res.redirect(`./invoice.html?+`);
+    // remove quantities in cart from inventory
+    // send to invoice.html
+    let params = new URLSearchParams();
+    params.append('username', username);
+    params.append('email', user_data[username].email);
+    res.redirect(`./invoice.html?${params.toString()}`);
   } else {
-
+    res.redirect(`./cart.html`);
   }
 });
 
 
+//--------- Complete Purchase/ Email Invoice -----------//
+// Borrowed and modified from Assignment 3 Example Codes and Labs, Wods
+//email invoice to user
+app.post('/complete_purchase', function (req, res) {
+  let username = req.cookies["login"];//get username
+  var user_email = req.body['email'];//get user email
+  var shopping_cart = req.session.cart;//get the cart
 
+  //invoice table
+  invoice_str = `<table class="w3-table-all w3-card-4">
+    <tbody style="border-color:navy">
+  
+    <tr>
+      <th style="text-align: center; background-color: rgb(187, 186, 236);" width="11%">Item</th>
+      <th style="text-align: center; background-color: darksalmon;" width="43%">Quantity</th>
+      <th style="text-align: center; background-color: rgb(240, 240, 156);" width="13%">Price</th>
+      <th style="text-align: center; background-color: rgb(168, 240, 168);" width="54%">Extended Price</th>
+    </tr>
+    `;
 
-//Creating an 0invoice to both print and email--from as3 code examples---incomplete
-app.get("/checkout", function (request, response) {
-  // Generate HTML invoice string
-  var invoice_str = `Thank you for your order!<table border><th>Quantity</th><th>Item</th>`;
-  var shopping_cart = request.session.cart;
-  for (product_key in allProducts) {
-    for (i = 0; i < allProducts[product_key].length; i++) {
-      if (typeof shopping_cart[product_key] == 'undefined') continue;
-      qty = shopping_cart[product_key][i];
-      if (qty > 0) {
-        invoice_str += `<tr><td>${qty}</td><td>${allProducts[product_key][i].name}</td><tr>`;
+  //this is invoice table   
+  //Borrowed and modified from invoice 4 WODs
+  
+  subtotal = 0;
+  total_qua = 0; //make the total quantities is 0 at frist
+  for (let prod_key in shopping_cart) {
+    let products = allProducts[prod_key];
+    for (i = 0; i < products.length; i++) {
+      let q = Number(shopping_cart[prod_key][`quantity${i}`]);
+      if (q > 0) {
+        // product row
+        total_qua += Number(q); //convert string to number, in order to display number
+        extended_price = q * products[i].price;
+        subtotal += extended_price;
+
+        invoice_str += `<tr>
+   <td width="43%"><em>${products[i].name}</em></td>
+   <td align="center" width="11%"><em>${q}</em></td>
+   <td width="13%"><em>\$${products[i].price}</em></td>
+   <td width="54%"><em>\$${extended_price}</em></td>
+ </tr>
+  `;
       }
     }
   }
-  invoice_str += '</table>';
+  //compute tax
+
+  var tax_rate = 0.04;
+  var tax = tax_rate * subtotal;
+
+  //compute shipping
+  if (total_qua <= 49) { //if the total quantites is under 50, then free shipping
+    shipping = 0;
+  }
+  else if (total_qua <= 200) { //if the total quantites 50-200, then we will charge $15 for shipping
+    shipping = 15;
+  }
+  else {
+    shipping = 0.05 * subtotal; // 5% of subtotal
+  }
+  //compute grant total
+  var total = subtotal + tax + shipping;
+
+invoice_str += `
+<p style="color:coral; font-size: 25px;"> Hi ${username}! We will send you this invoice to your email</p>
+<tr>
+<td style="text-align: center;" colspan="4"></td>
+</tr>
+<tr>
+<td style="text-align: center;font-family: Garamond;" colspan="3" width="67%">Total Quantities</td>
+<td width="54%">
+   ${total_qua}
+</td>
+</tr>
+<tr>
+<td style="text-align: center;font-family: Garamond;" colspan="3" width="67%">Sub-total</td>
+<td width="54%">$
+    ${subtotal.toFixed(2)}
+</td>
+</tr>
+<tr>
+<td style="text-align: center;font-family: Garamond;" colspan="3" width="67%"><span
+        style="font-family: Lucida Bright;">Tax @
+        ${100 * tax_rate}
+    </span></td>
+<td width="54%">$
+${tax.toFixed(2)}
+</td>
+</tr>
+<td style="text-align: center; font-family: Garamond;" colspan="3" width="67%">Shipping</span></td>
+<td width="54%">$
+${shipping.toFixed(2)}
+</td>
+</tr>
+<tr>
+<td style="text-align: center;font-family: Garamond;" colspan="3" width="67%"><strong>Total</strong>
+</td>
+<td width="54%"><strong>$
+${total.toFixed(2)}
+    </strong></td>
+</tr>
+</tbody>
+</table>
+`;
+
   // Set up mail server. Only will work on UH Network due to security restrictions
   var transporter = nodemailer.createTransport({
     host: "mail.hawaii.edu",
@@ -302,25 +420,24 @@ app.get("/checkout", function (request, response) {
       rejectUnauthorized: false
     }
   });
+  //get the username and email from user data
 
-  var user_email = user_data[request.cookies['username']]['email'];
   var mailOptions = {
     from: 'xinfeili@hawaii.edu',
     to: user_email,
-    subject: 'Your boba receipt',
+    subject: 'Thank you for your purchase! Here is your receipt', //send a thank you message and invoice to user's email
     html: invoice_str,
 
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      invoice_str += '<br>There was an error and your invoice could not be emailed :(';
+      invoice_str += '<br>There was an error and your invoice could not be emailed :('; //if invoice unable to send
     } else {
       invoice_str += `<br>Your invoice was mailed to ${user_email}`;
     }
-    response.send(invoice_str);
+    res.send(invoice_str);
   });
-
 });
 
 

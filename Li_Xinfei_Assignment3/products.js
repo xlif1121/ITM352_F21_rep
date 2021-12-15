@@ -1,6 +1,6 @@
 /*
 Xinfei Li Fall 2021
-Modified my Assignment 2  and borrowed code from WODs smartphoneproducts 3, assignment 3 example code, and Prof. Port's screencast
+Modified my Assignment 2 products.js and borrowed code from WODs smartphoneproducts 3, assignment 2 example code, and Prof. Port's screencast
 */
 
 var products =

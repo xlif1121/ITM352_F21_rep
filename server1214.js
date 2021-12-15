@@ -1,15 +1,15 @@
 /*Xinfei Li Fall 2021*/
 /*Modified and borrowed code from my Assignment 2 server, w3resource,Stack overflow, Chole Cheng & Caixin, and W3school, 
-Lab 14 & 15, assignment 2 & assignment 3 code examples and Prof. Port's screencast and help*/
+Lab 14, assignment 2 code examples, assignment 3 code examples and Prof. Port's screencast and help*/
 //Borrowed from Lab 13
 var express = require('express');
 var app = express();
-//set for cookieParser
+//cookieparser
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 //Set for nodemailer
 var nodemailer = require('nodemailer');
-// encryption
+// encryption borrowed from Chole & Caixin
 const e = require('express');
 const shift = 4;
 // Professor Port helped me with the code below
@@ -20,11 +20,15 @@ var allProducts = data.allProducts;
 var fs = require('fs');
 //set filename equal to user data.json
 var filename = './user_data.json';
-//set up session
+var querystring = require("querystring");
+// used to store quantity data from products disiplay page
+var temp_qty_data = {};
 var session = require('express-session');
+const { request } = require('express');
 //From Lab 15 intializes sessions
 app.use(session({ secret: "MySecretKey", resave: true, saveUninitialized: true }));
 // Routing 
+
 // monitor all requests
 //Borrowed from Lab 13
 app.all('*', function (request, response, next) {
@@ -32,7 +36,12 @@ app.all('*', function (request, response, next) {
   next();
 });
 
-//-------To set up shopping cart-----//
+
+//app.post("/get_products_data", function (request, response) {
+//response.json(data);
+//});
+
+//To set up shopping cart---incomplete
 app.get("/add_to_cart", function (request, response) {
   var product_key = request.query['prod_key']; // get the product key sent from the form post
   var quantities = request.query['quantities'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
@@ -40,7 +49,6 @@ app.get("/add_to_cart", function (request, response) {
   response.redirect('./cart.html');
 });
 
-//------------Set up get cart-------//
 //microservice return the shopping cart data from current session
 app.post("/get_cart", function (req, res) {
   if (typeof req.session.cart == 'undefined') {
@@ -57,6 +65,7 @@ app.get('/products.js', function (request, response, next) {
   var products_str = `var allProducts = ${JSON.stringify(allProducts)};`;
   response.send(products_str);
 });
+
 
 // Borrowed and modified from Lab 12 order_page.html
 function isNonNegInt(q, return_errors = false) {
@@ -82,8 +91,8 @@ if (fs.existsSync(filename)) {
 
 // -------------- Login -------------------- //
 //get help from Professor Port
-// save reffering page, unless it's login.html
 app.get('/login.html', function (req, res, next) {
+  // save reffering page, unless it's login.html
   if (!req.header('Referrer').includes('login.html')) {
     req.session.login_refferer = req.header('Referrer');
   }
@@ -212,12 +221,12 @@ app.post("/process_register", function (req, res) {
     user_data[username]["email"] = req.body['email'];
 
     fs.writeFileSync(filename, JSON.stringify(user_data), "utf-8");
-    // send the user a login cookies after they register for an account, and expire after 30 mins
-    res.cookie('login', username, { maxAge: 30 * 60 * 1000 });
-    res.cookie('email', username.email);
-    //take them back to the last page, which is the refferer page
-    res.redirect(req.session.login_refferer);
-    return;
+    // Put the stored quanitiy data into the temp_qty_data
+    //get the username and email from the register information
+    temp_qty_data['username'] = username;
+    temp_qty_data['email'] = user_data[username]["email"];
+    let params = new URLSearchParams(temp_qty_data);
+    res.redirect('/invoice.html?' + params.toString());// if good to go, send the user to invoice page with query string
   }
 
   //if error occurs, redirect to register page
@@ -229,7 +238,8 @@ app.post("/process_register", function (req, res) {
 });
 
 
-// -------------- Add Quantity to Cart ----------------- //
+
+// -------------- Purchase ----------------- //
 // process purchase request (validate quantities, check quantity available)
 app.post("/process_form", function (req, res, next) {
   // check the quantity, if it is not valid, send it to the products display page in order to repurchase
@@ -258,8 +268,9 @@ app.post("/process_form", function (req, res, next) {
       }
     }
   }
-
+  // If there are no errors, remove quantities from inventory and redirect to login
   // Professor Port helped me with the codes below
+
   if (JSON.stringify(errors) === '{}') {
     // keep the quanity data in the sesssion 
     if (typeof req.session.cart == 'undefined') {
@@ -267,30 +278,32 @@ app.post("/process_form", function (req, res, next) {
     }
     req.session.cart[product_key] = req.body;
     console.log(req.session.cart);
-    res.redirect(`./cart.html?`); // if it is valid, send to cart page
+    res.redirect(`./cart.html?`); // if it is valid, send to login page
   } else {
-    //otherwise add the errors and prod_key in to the string
     let params = new URLSearchParams(POST);
     params.append('errors', JSON.stringify(errors));
     params.append('prod_key', product_key);
+
     res.redirect("./products_display.html?" + params.toString()); // if it is incorrect, send to products display html
   }
 });
 
-//------------------ Complete Purchase -----------------//
 app.post("/confirm", function (req, res) {
-  let username = req.cookies["login"];//get username from cookies
-  console.log(req.cookies);// to check username/login
+  let username = req.cookies["login"];
+  console.log(req.cookies);
   // if user not logged in, send them to login
   if (typeof req.cookies["login"] == 'undefined') {
     res.redirect(`./login.html`);
     return;
   }
-  //check errors
+
+  // check if quanties in cart are still available. If not, send them back to cart to update.
+  //  Othwrwise  remove from inventory, email invoice, and  go to invoice
+
   var errors = {};
   if (JSON.stringify(errors) === '{}') {
-    // send to invoice.html 
-    //put their username and email in the URL/string
+    // remove quantities in cart from inventory
+    // send to invoice.html
     let params = new URLSearchParams();
     params.append('username', username);
     params.append('email', user_data[username].email);
@@ -301,35 +314,33 @@ app.post("/confirm", function (req, res) {
 });
 
 
-//-------------- Complete Purchase/ Email Invoice --------------//
+//--------- Complete Purchase/ Email Invoice -----------//
 // Borrowed and modified from Assignment 3 Example Codes and Labs, Wods
 //email invoice to user
-
 app.post('/complete_purchase', function (req, res) {
   let username = req.cookies["login"];//get username
-  let user_email = user_data[username].email;//get user email
+  var user_email = req.body['email'];//get user email
   var shopping_cart = req.session.cart;//get the cart
 
-  // Modified and borrowed template from W3schools  
-  //Borrowed and modified from my invoice 
   //invoice table
   invoice_str = `<table class="w3-table-all w3-card-4">
     <tbody style="border-color:navy">
   
     <tr>
-      <th style="text-align: center; background-color: rgb(161, 219, 253);" width="11%">Item</th>
-      <th style="text-align: center; background-color: rgb(251, 208, 123);" width="43%">Quantity</th>
+      <th style="text-align: center; background-color: rgb(187, 186, 236);" width="11%">Item</th>
+      <th style="text-align: center; background-color: darksalmon;" width="43%">Quantity</th>
       <th style="text-align: center; background-color: rgb(240, 240, 156);" width="13%">Price</th>
       <th style="text-align: center; background-color: rgb(168, 240, 168);" width="54%">Extended Price</th>
     </tr>
     `;
 
-
-
-  subtotal = 0;//make the total quantities is 0 at frist
+  //this is invoice table   
+  //Borrowed and modified from invoice 4 WODs
+  
+  subtotal = 0;
   total_qua = 0; //make the total quantities is 0 at frist
   for (let prod_key in shopping_cart) {
-    let products = allProducts[prod_key]; //define products 
+    let products = allProducts[prod_key];
     for (i = 0; i < products.length; i++) {
       let q = Number(shopping_cart[prod_key][`quantity${i}`]);
       if (q > 0) {
@@ -366,10 +377,8 @@ app.post('/complete_purchase', function (req, res) {
   //compute grant total
   var total = subtotal + tax + shipping;
 
-
-  invoice_str += `
-<p style="color:#54a8ec; font-size: 20px;"> Mahalo ${username}! Thank you for purchase &#128144;<br>
- All orders are processed within 3-6 business days &#x1F4EC; </p>
+invoice_str += `
+<p style="color:coral; font-size: 25px;"> Hi ${username}! We will send you this invoice to your email</p>
 <tr>
 <td style="text-align: center;" colspan="4"></td>
 </tr>
@@ -409,7 +418,7 @@ ${total.toFixed(2)}
 </tbody>
 </table>
 `;
-  //Modified and borrowed code from Assignment 3 example codes
+
   // Set up mail server. Only will work on UH Network due to security restrictions
   var transporter = nodemailer.createTransport({
     host: "mail.hawaii.edu",
@@ -420,22 +429,21 @@ ${total.toFixed(2)}
       rejectUnauthorized: false
     }
   });
-
   //get the username and email from user data
 
   var mailOptions = {
     from: 'xinfeili@hawaii.edu',
     to: user_email,
     subject: 'Thank you for your purchase! Here is your receipt', //send a thank you message and invoice to user's email
-    html: invoice_str,//get the invoice 
+    html: invoice_str,
+
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);// print out the error 
-      invoice_str += '<br>There was an error and your invoice could not be emailed :('; //if invoice unable to send, display this
+      invoice_str += '<br>There was an error and your invoice could not be emailed :('; //if invoice unable to send
     } else {
-      invoice_str += `<br>Your invoice was mailed to ${user_email}`;//if invoice sent, display this
+      invoice_str += `<br>Your invoice was mailed to ${user_email}`;
     }
     res.send(invoice_str);
   });
@@ -444,6 +452,14 @@ ${total.toFixed(2)}
 
 
 
+
+
+
+
+  //var invoicehtml = req.body.invoicehtml
+  //var user_email = user_data[username]["email"];
+  //var the_email = req.cookies[user_data][username].email;
+//check if the quantites is valid or not, if it is good to go, then to invoice. 
 
 // route all other GET requests to files in public 
 app.use(express.static('./public'));

@@ -1,12 +1,13 @@
 <!--
     Xinfei Li Fall 2021 
-    Borrowed from my assignment 1 and modified from WODs, Labs, and Prof. Port's screencast, modified template from ww3schools.com
+    Borrowed from my assignment 2 and modified from WODs, Labs, and Prof. Port's screencast, modified template from ww3schools.com
 -->
 <script src="./products.js" type="text/javascript"></script>
 <script src="/Li_Xinfei_Assignment3/user_data.json" type="json"></script>
 <script src="./functions.js" type="text/javascript"></script>
 
 <script>
+    //to get get_cart
     loadJSON('./get_cart', function (response) {
         // Parsing JSON string into object
         shopping_cart = JSON.parse(response);
@@ -29,8 +30,6 @@
     else {
         window.location.href = "./login.html";
     }
-
-
 </script>
 
 <!DOCTYPE html>
@@ -52,7 +51,7 @@
         // show the username to make sure they login the correct account
         if (username != 'undefined' && username != '') {
             //if the username is correct, then show this
-            document.write(`<div class="center"><h5><b>&#x1F60A;&#x1F6D2;Aloha, ${username}! Please Review Your Itmes Below!</b><h5></div>`)
+            document.write(`<div class="center"><h5><b>&#x1F60A;Aloha, ${username}! Please Review Your Itmes Below!</b><h5></div>`)
         }
         else {
             document.write(``)
